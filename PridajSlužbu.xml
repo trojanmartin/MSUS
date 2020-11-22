@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://modeler.netgrif.com/petriflow_schema.xsd">
+	<id>Služba</id>
+	<initials>Služba</initials>
+	<title>Služba</title>
+	<defaultRole>true</defaultRole>
+	<transitionRole>false</transitionRole>
+	<!-- TRANSACTIONS -->
+	<!-- ROLES -->
+	<!-- DATA -->
+	<data type="enumeration_map">
+		<id>subscriptionType</id>
+		<title>Služby</title>
+	</data>
+	<data type="enumeration_map">
+		<id>subscriptionPrice</id>
+		<title>Cena</title>
+	</data>
+	<data type="text">
+		<id>text_0</id>
+		<title>Názov služby</title>
+		<placeholder>Služba</placeholder>
+	</data>
+	<data type="text">
+		<id>text_1</id>
+		<title>Id sluzby</title>
+		<placeholder>Id služby</placeholder>
+	</data>
+	<data type="number">
+		<id>number_0</id>
+		<title>Cena služby</title>
+		<placeholder>Zadajte cenu</placeholder>
+		<init>0</init>
+	</data>
+	<!-- I18NS -->
+	<!-- TRANSITIONS -->
+
+	<transition>
+		<id>1</id>
+		<x>260</x>
+		<y>96</y>
+		<layout>
+			<offset>0</offset>
+		</layout>
+		<label>Pridaj službu</label>
+		<dataGroup>
+			<id>DataGroup_1</id>
+			<dataRef>
+				<id>number_0</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>2</y>
+					<rows>1</rows>
+					<cols>4</cols>
+					<offset>0</offset>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+		</dataGroup>
+		<dataGroup>
+			<id>DataGroup_0</id>
+			<dataRef>
+				<id>text_0</id>
+				<logic>
+					<behavior>editable</behavior>
+					<behavior>required</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>4</cols>
+					<offset>0</offset>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>text_1</id>
+				<logic>
+					<behavior>editable</behavior>
+					<behavior>required</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>4</cols>
+					<offset>0</offset>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+		</dataGroup>
+		<event type="finish">
+			<id>1_finish</id>
+			<actions phase="pre">
+				<action>
+					sluzby: f.subscriptionType,                  
+                	nazov: f.text_0,
+                	id: f.text_1,
+					ceny: f.subscriptionPrice,
+					cena: f.number_0;
+					
+                	change sluzby options {
+                        sluzby.options + [(id.value): nazov.value]
+                	}
+					
+					change ceny options {
+						ceny.options + [(id.value): cena.value]
+					}
+    </action>
+			</actions>
+		</event>
+	</transition>
+		<transition>
+		<id>2</id>
+		<x>256</x>
+		<y>188</y>
+		<layout>
+			<offset>0</offset>
+		</layout>
+		<label>Dostupné služby</label>
+		<dataGroup>
+			<id>DataGroup_0</id>
+			<dataRef>
+				<id>subscriptionType</id>
+				<logic>
+					<behavior>visible</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>5</rows>
+					<cols>4</cols>
+					<offset>0</offset>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+		</dataGroup>
+	</transition>
+	<!-- PLACES -->
+	<!-- ARCS -->
+</document>

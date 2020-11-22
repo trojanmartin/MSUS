@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://modeler.netgrif.com/petriflow_schema.xsd">
+	<id>User</id>
+	<initials>User</initials>
+	<title>User</title>
+	<defaultRole>true</defaultRole>
+	<transitionRole>false</transitionRole>
+	<!-- TRANSACTIONS -->
+	<!-- ROLES -->
+	<role>
+		<id>Admin</id>
+		<title>Admin</title>
+	</role>
+	<role>
+		<id>User</id>
+		<title>User</title>
+	</role>
+	<!-- DATA -->
+	<data type="number">
+		<id>number_3</id>
+		<title>Konto</title>
+		<init>0</init>
+	</data>
+	<data type="text">
+		<id>text_4</id>
+		<title>Meno</title>
+		<placeholder>Meno</placeholder>
+	</data>
+	<data type="text">
+		<id>text_5</id>
+		<title>Priezvisko</title>
+		<placeholder>Priezvisko</placeholder>
+	</data>
+	<data type="number">
+		<id>number_4</id>
+		<title>Suma na doplnenie</title>
+		<init>0</init>
+	</data>
+	<data type="caseRef">
+		<id>subscriptions</id>
+		<title>Predplatené služby</title>
+	</data>
+	<data type="enumeration">
+		<id>enumeration_0</id>
+		<title>Dostupné služby</title>
+		<init>option1</init>
+	</data>
+	<!-- I18NS -->
+	<!-- TRANSITIONS -->
+	<transition>
+		<id>4</id>
+		<x>187</x>
+		<y>71</y>
+		<layout>
+			<offset>0</offset>
+		</layout>
+		<label>Doplň konto</label>
+		<assignPolicy>auto</assignPolicy>
+		<roleRef>
+			<id>User</id>
+			<logic>
+				<perform>true</perform>
+				<delegate>true</delegate>
+				<view>true</view>
+			</logic>
+		</roleRef>
+		<roleRef>
+			<id>Admin</id>
+			<logic>
+				<perform>true</perform>
+				<delegate>true</delegate>
+				<view>true</view>
+			</logic>
+		</roleRef>
+		<dataGroup>
+			<id>DataGroup_0</id>
+			<dataRef>
+				<id>number_4</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>4</cols>
+					<offset>0</offset>
+					<template>netgrif</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+		</dataGroup>
+		<event type="finish">
+			<id>4_finish</id>
+			<actions phase="pre">
+				<action>cis: f.number_3;
+
+						change cis value {
+							return cis.value + 1;
+						}
+				</action>
+			</actions>
+		</event>
+	</transition>
+	<transition>
+		<id>5</id>
+		<x>92</x>
+		<y>66</y>
+		<layout>
+			<offset>0</offset>
+		</layout>
+		<label>Profil</label>
+		<assignPolicy>auto</assignPolicy>
+		<roleRef>
+			<id>Admin</id>
+			<logic>
+				<perform>true</perform>
+				<delegate>true</delegate>
+				<view>true</view>
+			</logic>
+		</roleRef>
+		<roleRef>
+			<id>User</id>
+			<logic>
+				<perform>true</perform>
+				<delegate>true</delegate>
+				<view>true</view>
+			</logic>
+		</roleRef>
+		<dataGroup>
+			<id>DataGroup_1</id>
+			<dataRef>
+				<id>text_4</id>
+				<logic>
+					<behavior>visible</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>4</cols>
+					<offset>0</offset>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>text_5</id>
+				<logic>
+					<behavior>visible</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>4</cols>
+					<offset>0</offset>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+		</dataGroup>
+		<dataGroup>
+			<id>DataGroup_0</id>
+			<dataRef>
+				<id>number_3</id>
+				<logic>
+					<behavior>visible</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>2</y>
+					<rows>3</rows>
+					<cols>4</cols>
+					<offset>0</offset>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+		</dataGroup>
+		<event type="assign">
+			<id>5_assign</id>
+			<actions phase="post">
+				<action >		meno: f.text_4,
+        priezvisko: f.text_5;
+
+        change meno value {
+            userService.getLoggedOrSystem().name
+        }
+
+        change priezvisko value {
+            userService.getLoggedOrSystem().surname
+        }
+
+</action>
+			</actions>
+		</event>
+	</transition>
+	<transition>
+		<id>8</id>
+		<x>285</x>
+		<y>193</y>
+		<layout>
+			<offset>0</offset>
+		</layout>
+		<label>Pridaj nové predplatné</label>
+		<assignPolicy>auto</assignPolicy>
+		<roleRef>
+			<id>Admin</id>
+			<logic>
+				<perform>true</perform>
+				<delegate>true</delegate>
+				<view>true</view>
+			</logic>
+		</roleRef>
+		<roleRef>
+			<id>User</id>
+			<logic>
+				<perform>true</perform>
+				<delegate>true</delegate>
+				<view>true</view>
+			</logic>
+		</roleRef>
+		<event type="finish">
+			<id>8_finish</id>
+			<actions phase="post">			
+				<action>def predplatne = createCase("5f86b237f9ac3b272d6be569_predplatne", "Predplatené")</action>
+			</actions>
+		</event>
+	</transition>
+	<transition>
+		<id>10</id>
+		<x>205</x>
+		<y>347</y>
+		<layout>
+			<offset>0</offset>
+		</layout>
+		<label>Pridaj novú službu do aplikácie</label>
+		<roleRef>
+			<id>Admin</id>
+			<logic>
+				<perform>true</perform>
+				<delegate>true</delegate>
+				<view>true</view>
+			</logic>
+		</roleRef>
+	</transition>
+	<!-- PLACES -->
+	<place>
+		<id>3</id>
+		<x>94</x>
+		<y>260</y>
+		<label></label>
+		<tokens>1</tokens>
+		<static>false</static>
+	</place>
+	<!-- ARCS -->
+	<arc>
+		<id>6</id>
+		<type>read</type>
+		<sourceId>3</sourceId>
+		<destinationId>5</destinationId>
+		<multiplicity>1</multiplicity>
+	</arc>
+	<arc>
+		<id>7</id>
+		<type>read</type>
+		<sourceId>3</sourceId>
+		<destinationId>4</destinationId>
+		<multiplicity>1</multiplicity>
+	</arc>
+	<arc>
+		<id>11</id>
+		<type>read</type>
+		<sourceId>3</sourceId>
+		<destinationId>10</destinationId>
+		<multiplicity>1</multiplicity>
+	</arc>
+	<arc>
+		<id>12</id>
+		<type>read</type>
+		<sourceId>3</sourceId>
+		<destinationId>8</destinationId>
+		<multiplicity>1</multiplicity>
+	</arc>
+</document>

@@ -45,6 +45,13 @@
 		<title>Dostupné služby</title>
 		<init>option1</init>
 	</data>
+	<data type="text">
+		<id>text_0</id>
+		<title>set label</title>
+		<placeholder>placeholder</placeholder>
+		<desc>description</desc>
+		<init>value</init>
+	</data>
 	<!-- I18NS -->
 	<!-- TRANSITIONS -->
 	<transition>
@@ -182,7 +189,7 @@
 		<event type="assign">
 			<id>5_assign</id>
 			<actions phase="post">
-				<action >		meno: f.text_4,
+				<action>		meno: f.text_4,
         priezvisko: f.text_5;
 
         change meno value {
@@ -199,8 +206,8 @@
 	</transition>
 	<transition>
 		<id>8</id>
-		<x>285</x>
-		<y>193</y>
+		<x>289</x>
+		<y>154</y>
 		<layout>
 			<offset>0</offset>
 		</layout>
@@ -224,7 +231,7 @@
 		</roleRef>
 		<event type="finish">
 			<id>8_finish</id>
-			<actions phase="post">			
+			<actions phase="post">
 				<action>				
 				def predplatne = createCase("5f86b237f9ac3b272d6be569_predplatne", "Predplatené")						
 				</action>
@@ -247,6 +254,78 @@
 				<view>true</view>
 			</logic>
 		</roleRef>
+	</transition>
+	<transition>
+		<id>13</id>
+		<x>342</x>
+		<y>257</y>
+		<layout>
+			<offset>0</offset>
+		</layout>
+		<label>Skontrolovať predplatné užívateľov</label>
+		<roleRef>
+			<id>Admin</id>
+			<logic>
+				<perform>true</perform>
+				<delegate>true</delegate>
+				<view>true</view>
+			</logic>
+		</roleRef>
+		<roleRef>
+			<id>User</id>
+			<logic>
+				<perform>true</perform>
+				<delegate>true</delegate>
+				<view>true</view>
+			</logic>
+		</roleRef>
+		<dataGroup>
+			<id>DataGroup_0</id>
+			<dataRef>
+				<id>text_0</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>3</cols>
+					<offset>0</offset>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+		</dataGroup>
+		<event type="assign">
+			<id>13_finish</id>
+			<actions phase="post">
+				<action>
+				texta: f.text_0;
+				
+				
+				
+				def sluzby = findCases({it.processIdentifier.eq("5f86b237f9ac3b272d6be569_predplatne")});			
+				
+				
+				for (sluzba in sluzby)
+				{			
+					if(1 == 1)
+					{
+						def task = findTask({ it.transitionId.eq("35") &amp; it.caseId.eq(sluzba.stringId)});
+						
+						def kontrola = findTask({ it.transitionId.eq("22") &amp; it.caseId.eq(sluzba.stringId)});
+						
+						def user = userService.findById(kontrola.userId, false);
+						
+						assignTask(task, user);				
+						
+					}
+				}				
+				
+				</action>
+			</actions>
+		</event>
 	</transition>
 	<!-- PLACES -->
 	<place>
@@ -284,6 +363,13 @@
 		<type>read</type>
 		<sourceId>3</sourceId>
 		<destinationId>8</destinationId>
+		<multiplicity>1</multiplicity>
+	</arc>
+	<arc>
+		<id>14</id>
+		<type>read</type>
+		<sourceId>3</sourceId>
+		<destinationId>13</destinationId>
 		<multiplicity>1</multiplicity>
 	</arc>
 </document>

@@ -77,6 +77,11 @@
 		<id>text_5</id>
 		<title>Typ predplatného</title>
 	</data>
+	<data type="boolean">
+		<id>boolean_1</id>
+		<title>Automatické predĺženie</title>
+		<init>false</init>
+	</data>
 	<!-- I18NS -->
 	<!-- TRANSITIONS -->
 	<transition>
@@ -298,19 +303,28 @@ else{
 	</transition>
 	<transition>
 		<id>22</id>
-		<x>666</x>
-		<y>356</y>
+		<x>658</x>
+		<y>361</y>
 		<layout>
 			<offset>0</offset>
 		</layout>
 		<label>Kontrola stavu predplatného</label>
 		<dataGroup>
 			<id>DataGroup_0</id>
-			<layout>grid</layout>
 			<dataRef>
-				<id>boolean_0</id>
+				<id>boolean_1</id>
 				<logic>
 					<behavior>editable</behavior>
+					<action trigger="get">predplatne: f.boolean_0,
+toto: f.boolean_1;
+change toto value{
+    predplatne.value
+}</action>
+					<action trigger="set">predplatne: f.boolean_0,
+toto: f.boolean_1;
+change predplatne value{
+    toto.value
+}</action>
 				</logic>
 				<layout>
 					<x>0</x>
@@ -319,6 +333,7 @@ else{
 					<cols>4</cols>
 					<offset>0</offset>
 					<template>material</template>
+					<appearance></appearance>
 				</layout>
 			</dataRef>
 		</dataGroup>
@@ -327,12 +342,28 @@ else{
 			<dataRef>
 				<id>text_5</id>
 				<logic>
-					<behavior>editable</behavior>
-					<action trigger="get">predplatne: f.enumeration_0;
-
-change this value{
-    predplatne.value.toString();
-}</action>
+					<behavior>visible</behavior>
+					<action trigger="get">
+					predplatne: f.enumeration_0,
+					pred: f.this;
+					
+					
+					def sluzba = findCase({it.processIdentifier.eq("5f86b237f9ac3b272d6be569_Služba")})																	
+					
+					def subs = sluzba.dataSet["subscriptionType"].options						
+					def current;
+					
+					for (entry in subs) {
+						if(entry.key.equals(predplatne.value.toString()))
+						{
+							current = entry.value as String
+						}
+					}			
+					
+				change  pred value{
+					current	
+				}
+				</action>
 				</logic>
 				<layout>
 					<x>0</x>
@@ -347,12 +378,15 @@ change this value{
 			<dataRef>
 				<id>text_2</id>
 				<logic>
-					<behavior>editable</behavior>
-					<action trigger="get">datum: f.text_0;
-
-change this value{
-    datum.value;
-}</action>
+					<behavior>visible</behavior>
+					<action trigger="get">
+					platneOd: f.text_0,
+					platne: f.this;		
+					
+				change  platne value{
+					platneOd.value
+				}
+				</action>
 				</logic>
 				<layout>
 					<x>0</x>
@@ -367,7 +401,25 @@ change this value{
 			<dataRef>
 				<id>text_3</id>
 				<logic>
-					<behavior>editable</behavior>
+					<behavior>visible</behavior>
+					<action trigger="get">
+					platneOd: f.text_0,
+					platneDo: f.this,
+					pocetMesiacov: f.number_2;														
+				
+					def poc = (Integer) pocetMesiacov.value;
+					def date = new Date(platneOd.value as String);
+					def a = null;
+					use (groovy.time.TimeCategory) {     
+							a = date+poc.months
+						 }
+						
+					change  platneDo value {
+						a.toString();
+					}
+					
+				
+				</action>
 				</logic>
 				<layout>
 					<x>2</x>
@@ -389,6 +441,7 @@ change this value{
 			<offset>0</offset>
 		</layout>
 		<label>Vypršalo</label>
+		<finishPolicy>auto_no_data</finishPolicy>
 		<roleRef>
 			<id>Admin</id>
 			<logic>
@@ -397,6 +450,30 @@ change this value{
 				<view>true</view>
 			</logic>
 		</roleRef>
+		<roleRef>
+			<id>User</id>
+			<logic>
+				<perform>true</perform>
+				<delegate>true</delegate>
+			</logic>
+		</roleRef>
+		<event type="assign">
+			<id>35_assign</id>
+			<actions phase="post">
+				<action>
+				autoDaco: f.boolean_0;
+				
+				if(autoDaco.value)
+				{
+					assignTask("48");
+				}
+				else
+				{
+					assignTask("49");					
+				}
+				</action>
+			</actions>
+		</event>
 	</transition>
 	<transition>
 		<id>48</id>
@@ -406,6 +483,31 @@ change this value{
 			<offset>0</offset>
 		</layout>
 		<label>Automatické predĺženie</label>
+		<finishPolicy>auto_no_data</finishPolicy>
+		<roleRef>
+			<id>User</id>
+			<logic>
+				<perform>true</perform>
+				<delegate>true</delegate>
+				<view>true</view>
+			</logic>
+		</roleRef>
+		<roleRef>
+			<id>Admin</id>
+			<logic>
+				<perform>true</perform>
+				<delegate>true</delegate>
+				<view>true</view>
+			</logic>
+		</roleRef>
+		<event type="assign">
+			<id>48_assign</id>
+			<actions phase="post">
+				<action>
+					assignTask("3");					
+				</action>
+			</actions>
+		</event>
 	</transition>
 	<transition>
 		<id>49</id>
@@ -415,6 +517,32 @@ change this value{
 			<offset>0</offset>
 		</layout>
 		<label>Zrušenie predplatného</label>
+		<finishPolicy>auto_no_data</finishPolicy>
+		<roleRef>
+			<id>User</id>
+			<logic>
+				<perform>true</perform>
+				<delegate>true</delegate>
+				<view>true</view>
+			</logic>
+		</roleRef>
+		<roleRef>
+			<id>Admin</id>
+			<logic>
+				<perform>true</perform>
+				<delegate>true</delegate>
+				<view>true</view>
+			</logic>
+		</roleRef>
+		<event type="assign">
+			<id>49_assign</id>
+			<actions phase="post">
+				<action>
+				
+				assignTask("49");
+				</action>
+			</actions>
+		</event>
 	</transition>
 	<transition>
 		<id>61</id>
@@ -425,6 +553,16 @@ change this value{
 		</layout>
 		<label>Platba úspešná</label>
 		<finishPolicy>auto_no_data</finishPolicy>
+		<event type="finish">
+			<id>61_finish</id>
+			<actions phase="post">
+				<action>
+				
+				assignTask("22");
+				
+				</action>
+			</actions>
+		</event>
 	</transition>
 	<transition>
 		<id>63</id>

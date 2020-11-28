@@ -93,10 +93,11 @@
 		<event type="finish">
 			<id>4_finish</id>
 			<actions phase="pre">
-				<action>cis: f.number_3;
+				<action>cis: f.number_3,
+						dopln: f.number_4;
 
 						change cis value {
-							return cis.value + 1;
+							return cis.value + dopln.value;
 						}
 				</action>
 			</actions>
@@ -224,7 +225,9 @@
 		<event type="finish">
 			<id>8_finish</id>
 			<actions phase="post">			
-				<action>def predplatne = createCase("5f86b237f9ac3b272d6be569_predplatne", "Predplatené")</action>
+				<action>				
+				def predplatne = createCase("5f86b237f9ac3b272d6be569_predplatne", "Predplatené")						
+				</action>
 			</actions>
 		</event>
 	</transition>

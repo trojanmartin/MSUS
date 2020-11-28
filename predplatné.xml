@@ -7,6 +7,14 @@
 	<transitionRole>false</transitionRole>
 	<!-- TRANSACTIONS -->
 	<!-- ROLES -->
+	<role>
+		<id>User</id>
+		<title>User</title>
+	</role>
+	<role>
+		<id>Admin</id>
+		<title>Admin</title>
+	</role>
 	<!-- DATA -->
 	<data type="enumeration_map">
 		<id>enumeration_0</id>
@@ -35,10 +43,39 @@
 	</data>
 	<data type="text">
 		<id>text_0</id>
-		<title>set label</title>
+		<title>created</title>
 		<placeholder>placeholder</placeholder>
 		<desc>description</desc>
 		<init>value</init>
+	</data>
+	<data type="text">
+		<id>text_1</id>
+		<title>Typ predplatného</title>
+	</data>
+	<data type="text">
+		<id>text_2</id>
+		<title>Dátum vytvorenia</title>
+	</data>
+	<data type="text">
+		<id>text_3</id>
+		<title>Platné do</title>
+	</data>
+	<data type="text">
+		<id>text_4</id>
+		<title></title>
+		<init>Nedostatok finančných prostriedkov</init>
+	</data>
+	<data type="button">
+		<id>button_0</id>
+		<title>Skúsiť znova</title>
+	</data>
+	<data type="button">
+		<id>button_1</id>
+		<title>Zmazať predplatné</title>
+	</data>
+	<data type="text">
+		<id>text_5</id>
+		<title>Typ predplatného</title>
 	</data>
 	<!-- I18NS -->
 	<!-- TRANSITIONS -->
@@ -53,11 +90,10 @@
 		<assignPolicy>auto</assignPolicy>
 		<dataGroup>
 			<id>DataGroup_1</id>
-			<layout>grid</layout>
 			<dataRef>
 				<id>text_0</id>
 				<logic>
-					<behavior>editable</behavior>
+					<behavior>hidden</behavior>
 				</logic>
 				<layout>
 					<x>0</x>
@@ -116,6 +152,7 @@
 					<cols>2</cols>
 					<offset>0</offset>
 					<template>material</template>
+					<appearance></appearance>
 				</layout>
 			</dataRef>
 			<dataRef>
@@ -162,7 +199,7 @@
 				<logic>
 					<behavior>editable</behavior>
 					<behavior>required</behavior>
-					<action  trigger="set">
+					<action trigger="set">
 						suma: f.number_1,
 						mesiac: f.this,
 						text: f.text_0,
@@ -197,6 +234,9 @@
 				</layout>
 			</dataRef>
 		</dataGroup>
+		<event type="finish">
+			<id>2_finish</id>
+		</event>
 	</transition>
 	<transition>
 		<id>3</id>
@@ -207,6 +247,45 @@
 		</layout>
 		<label>Zaplatiť</label>
 		<assignPolicy>auto</assignPolicy>
+		<event type="assign">
+			<id>3_assign</id>
+			<actions phase="post">
+				<action>
+				suma: f.number_1,
+				datum: f.text_0;
+				
+				
+	def userCase = findCase({it.processIdentifier.eq("5f86b237f9ac3b272d6be569_User")})
+	finishTask("3");
+
+if(suma.value &lt;= userCase.dataSet["number_3"].value)
+{	
+	def konto = userCase.dataSet["number_3"].value - suma.value;
+
+	def profil = findTask({it.caseId.eq(userCase.stringId) &amp; it.transitionId.eq("5")});
+	
+	setData(profil, [
+			 "number_3": [
+			 "value": konto,
+			 "type" : "number"
+			 ],
+			])
+	
+	 Date date = new Date(); 
+	
+	change datum value {
+		date.toString();
+	}
+	
+    assignTask("61");	
+}
+else{
+    def failure = findTask({ it.transitionId.eq("63")})
+    assignTask(failure) 
+}
+</action>
+			</actions>
+		</event>
 	</transition>
 	<transition>
 		<id>13</id>
@@ -219,30 +298,105 @@
 	</transition>
 	<transition>
 		<id>22</id>
-		<x>740</x>
-		<y>340</y>
+		<x>666</x>
+		<y>356</y>
 		<layout>
 			<offset>0</offset>
 		</layout>
 		<label>Kontrola stavu predplatného</label>
+		<dataGroup>
+			<id>DataGroup_0</id>
+			<layout>grid</layout>
+			<dataRef>
+				<id>boolean_0</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>2</y>
+					<rows>1</rows>
+					<cols>4</cols>
+					<offset>0</offset>
+					<template>material</template>
+				</layout>
+			</dataRef>
+		</dataGroup>
+		<dataGroup>
+			<id>DataGroup_1</id>
+			<dataRef>
+				<id>text_5</id>
+				<logic>
+					<behavior>editable</behavior>
+					<action trigger="get">predplatne: f.enumeration_0;
+
+change this value{
+    predplatne.value.toString();
+}</action>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>4</cols>
+					<offset>0</offset>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>text_2</id>
+				<logic>
+					<behavior>editable</behavior>
+					<action trigger="get">datum: f.text_0;
+
+change this value{
+    datum.value;
+}</action>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<offset>0</offset>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>text_3</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<offset>0</offset>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+		</dataGroup>
 	</transition>
 	<transition>
 		<id>35</id>
-		<x>940</x>
-		<y>460</y>
+		<x>896</x>
+		<y>240</y>
 		<layout>
 			<offset>0</offset>
 		</layout>
 		<label>Vypršalo</label>
-	</transition>
-	<transition>
-		<id>40</id>
-		<x>580</x>
-		<y>340</y>
-		<layout>
-			<offset>0</offset>
-		</layout>
-		<label>Trvá</label>
+		<roleRef>
+			<id>Admin</id>
+			<logic>
+				<perform>true</perform>
+				<delegate>true</delegate>
+				<view>true</view>
+			</logic>
+		</roleRef>
 	</transition>
 	<transition>
 		<id>48</id>
@@ -255,8 +409,8 @@
 	</transition>
 	<transition>
 		<id>49</id>
-		<x>1220</x>
-		<y>300</y>
+		<x>1092</x>
+		<y>248</y>
 		<layout>
 			<offset>0</offset>
 		</layout>
@@ -270,6 +424,7 @@
 			<offset>0</offset>
 		</layout>
 		<label>Platba úspešná</label>
+		<finishPolicy>auto_no_data</finishPolicy>
 	</transition>
 	<transition>
 		<id>63</id>
@@ -279,6 +434,86 @@
 			<offset>0</offset>
 		</layout>
 		<label>Platba neúspešná</label>
+		<dataGroup>
+			<id>DataGroup_0</id>
+			<dataRef>
+				<id>text_4</id>
+				<logic>
+					<behavior>visible</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>4</cols>
+					<offset>0</offset>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>button_0</id>
+				<logic>
+					<behavior>editable</behavior>
+					<action trigger="set">
+					finishTask("63");
+						
+					assignTask("74");
+					finishTask("74");
+					</action>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<offset>0</offset>
+					<template>material</template>
+					<appearance></appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>button_1</id>
+				<logic>
+					<behavior>editable</behavior>
+					<action trigger="set">
+					finishTask("63");
+						
+					assignTask("75");
+					finishTask("75");
+					</action>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<offset>0</offset>
+					<template>material</template>
+					<appearance></appearance>
+				</layout>
+			</dataRef>
+		</dataGroup>
+	</transition>
+	<transition>
+		<id>74</id>
+		<x>218</x>
+		<y>380</y>
+		<layout>
+			<offset>0</offset>
+		</layout>
+		<label>Pokúsiť sa zaplatiť</label>
+		<finishPolicy>auto_no_data</finishPolicy>
+	</transition>
+	<transition>
+		<id>75</id>
+		<x>498</x>
+		<y>469</y>
+		<layout>
+			<offset>0</offset>
+		</layout>
+		<label>Zrušenie predplatného</label>
+		<finishPolicy>auto_no_data</finishPolicy>
 	</transition>
 	<!-- PLACES -->
 	<place>
@@ -306,17 +541,9 @@
 		<static>false</static>
 	</place>
 	<place>
-		<id>34</id>
-		<x>660</x>
-		<y>460</y>
-		<label></label>
-		<tokens>0</tokens>
-		<static>false</static>
-	</place>
-	<place>
 		<id>47</id>
-		<x>940</x>
-		<y>300</y>
+		<x>941</x>
+		<y>146</y>
 		<label></label>
 		<tokens>0</tokens>
 		<static>false</static>
@@ -330,9 +557,17 @@
 		<static>false</static>
 	</place>
 	<place>
-		<id>62</id>
-		<x>214</x>
-		<y>299</y>
+		<id>70</id>
+		<x>677</x>
+		<y>471</y>
+		<label></label>
+		<tokens>0</tokens>
+		<static>false</static>
+	</place>
+	<place>
+		<id>76</id>
+		<x>416</x>
+		<y>383</y>
 		<label></label>
 		<tokens>0</tokens>
 		<static>false</static>
@@ -371,41 +606,6 @@
 		<type>regular</type>
 		<sourceId>6</sourceId>
 		<destinationId>13</destinationId>
-		<multiplicity>1</multiplicity>
-	</arc>
-	<arc>
-		<id>36</id>
-		<type>regular</type>
-		<sourceId>22</sourceId>
-		<destinationId>34</destinationId>
-		<multiplicity>1</multiplicity>
-	</arc>
-	<arc>
-		<id>37</id>
-		<type>regular</type>
-		<sourceId>34</sourceId>
-		<destinationId>35</destinationId>
-		<multiplicity>1</multiplicity>
-	</arc>
-	<arc>
-		<id>41</id>
-		<type>regular</type>
-		<sourceId>34</sourceId>
-		<destinationId>40</destinationId>
-		<multiplicity>1</multiplicity>
-	</arc>
-	<arc>
-		<id>45</id>
-		<type>regular</type>
-		<sourceId>6</sourceId>
-		<destinationId>22</destinationId>
-		<multiplicity>1</multiplicity>
-	</arc>
-	<arc>
-		<id>46</id>
-		<type>regular</type>
-		<sourceId>40</sourceId>
-		<destinationId>6</destinationId>
 		<multiplicity>1</multiplicity>
 	</arc>
 	<arc>
@@ -458,17 +658,66 @@
 		<multiplicity>1</multiplicity>
 	</arc>
 	<arc>
-		<id>66</id>
-		<type>regular</type>
-		<sourceId>63</sourceId>
-		<destinationId>62</destinationId>
-		<multiplicity>1</multiplicity>
-	</arc>
-	<arc>
 		<id>67</id>
 		<type>regular</type>
 		<sourceId>61</sourceId>
 		<destinationId>6</destinationId>
+		<multiplicity>1</multiplicity>
+	</arc>
+	<arc>
+		<id>68</id>
+		<type>read</type>
+		<sourceId>6</sourceId>
+		<destinationId>22</destinationId>
+		<multiplicity>1</multiplicity>
+	</arc>
+	<arc>
+		<id>69</id>
+		<type>regular</type>
+		<sourceId>6</sourceId>
+		<destinationId>35</destinationId>
+		<multiplicity>1</multiplicity>
+	</arc>
+	<arc>
+		<id>71</id>
+		<type>regular</type>
+		<sourceId>49</sourceId>
+		<destinationId>70</destinationId>
+		<multiplicity>1</multiplicity>
+	</arc>
+	<arc>
+		<id>77</id>
+		<type>regular</type>
+		<sourceId>63</sourceId>
+		<destinationId>76</destinationId>
+		<multiplicity>1</multiplicity>
+	</arc>
+	<arc>
+		<id>78</id>
+		<type>regular</type>
+		<sourceId>76</sourceId>
+		<destinationId>74</destinationId>
+		<multiplicity>1</multiplicity>
+	</arc>
+	<arc>
+		<id>79</id>
+		<type>regular</type>
+		<sourceId>76</sourceId>
+		<destinationId>75</destinationId>
+		<multiplicity>1</multiplicity>
+	</arc>
+	<arc>
+		<id>80</id>
+		<type>regular</type>
+		<sourceId>74</sourceId>
+		<destinationId>5</destinationId>
+		<multiplicity>1</multiplicity>
+	</arc>
+	<arc>
+		<id>81</id>
+		<type>regular</type>
+		<sourceId>75</sourceId>
+		<destinationId>70</destinationId>
 		<multiplicity>1</multiplicity>
 	</arc>
 </document>

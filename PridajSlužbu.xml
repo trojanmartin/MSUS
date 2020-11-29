@@ -46,6 +46,7 @@
 			<offset>0</offset>
 		</layout>
 		<label>Pridaj službu</label>
+		<icon>add_circle_outline</icon>
 		<roleRef>
 			<id>Admin</id>
 			<logic>
@@ -135,6 +136,7 @@
 			<offset>0</offset>
 		</layout>
 		<label>Dostupné služby</label>
+		<icon>content_paste</icon>
 		<roleRef>
 			<id>Admin</id>
 			<logic>

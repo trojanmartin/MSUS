@@ -52,6 +52,13 @@
 		<desc>description</desc>
 		<init>value</init>
 	</data>
+	<data type="taskRef">
+		<id>taskRef_0</id>
+		<title>set label</title>
+		<placeholder>placeholder</placeholder>
+		<desc>description</desc>
+		<init>value</init>
+	</data>
 	<!-- I18NS -->
 	<!-- TRANSITIONS -->
 	<transition>
@@ -62,6 +69,7 @@
 			<offset>0</offset>
 		</layout>
 		<label>Doplň konto</label>
+		<icon>attach_money</icon>
 		<assignPolicy>auto</assignPolicy>
 		<roleRef>
 			<id>User</id>
@@ -118,6 +126,7 @@
 			<offset>0</offset>
 		</layout>
 		<label>Profil</label>
+		<icon>face</icon>
 		<assignPolicy>auto</assignPolicy>
 		<roleRef>
 			<id>Admin</id>
@@ -212,6 +221,7 @@
 			<offset>0</offset>
 		</layout>
 		<label>Pridaj nové predplatné</label>
+		<icon>plus_one</icon>
 		<assignPolicy>auto</assignPolicy>
 		<roleRef>
 			<id>Admin</id>
@@ -233,7 +243,7 @@
 			<id>8_finish</id>
 			<actions phase="post">
 				<action>				
-				def predplatne = createCase("5f86b237f9ac3b272d6be569_predplatne", "Predplatené")						
+				def predplatne = createCase("5f86b23ef9ac3b272d6c7779_predplatne", "Predplatené")						
 				</action>
 			</actions>
 		</event>
@@ -246,6 +256,7 @@
 			<offset>0</offset>
 		</layout>
 		<label>Pridaj novú službu do aplikácie</label>
+		<icon>add_to_queue</icon>
 		<roleRef>
 			<id>Admin</id>
 			<logic>
@@ -254,6 +265,50 @@
 				<view>true</view>
 			</logic>
 		</roleRef>
+		<dataGroup>
+			<id>DataGroup_0</id>
+			<dataRef>
+				<id>taskRef_0</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>4</cols>
+					<offset>0</offset>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+		</dataGroup>
+		<event type="assign">
+			<id>10_assign</id>
+			<actions phase="post">
+				<action>
+					pridaj: f.taskRef_0;
+						
+					def sluzby = findCase({it.processIdentifier.eq("5f86b23ef9ac3b272d6c7779_Služba")});						
+					def pridajSlubu = findTask({ it.transitionId.eq("1") &amp; it.caseId.eq(sluzby.stringId)});
+					
+					change pridaj value {
+						[pridajSlubu.stringId]
+					}
+				</action>
+			</actions>
+		</event>
+		<event type="finish">
+			<id>10_finish</id>
+			<actions phase="post">
+				<action>					
+						
+					def sluzby = findCase({it.processIdentifier.eq("5f86b23ef9ac3b272d6c7779_Služba")});						
+					def pridajSlubu = findTask({ it.transitionId.eq("1") &amp; it.caseId.eq(sluzby.stringId)});
+					finishTask(pridajSlubu);
+				</action>
+			</actions>
+		</event>
 	</transition>
 	<transition>
 		<id>13</id>
@@ -263,6 +318,7 @@
 			<offset>0</offset>
 		</layout>
 		<label>Skontrolovať predplatné užívateľov</label>
+		<icon>airplay</icon>
 		<roleRef>
 			<id>Admin</id>
 			<logic>
@@ -274,9 +330,6 @@
 		<roleRef>
 			<id>User</id>
 			<logic>
-				<perform>true</perform>
-				<delegate>true</delegate>
-				<view>true</view>
 			</logic>
 		</roleRef>
 		<dataGroup>
@@ -305,7 +358,7 @@
 				
 				
 				
-				def sluzby = findCases({it.processIdentifier.eq("5f86b237f9ac3b272d6be569_predplatne")});			
+				def sluzby = findCases({it.processIdentifier.eq("5f86b23ef9ac3b272d6c7779_predplatne")});			
 				
 				
 				for (sluzba in sluzby)
@@ -322,7 +375,6 @@
 							finishTask(task,user);
 						}
 						
-							
 					}
 				}				
 				

@@ -297,7 +297,7 @@
 				</layout>
 			</dataRef>
 		</dataGroup>
-		<event type="assign">
+		<event type="finish">
 			<id>13_finish</id>
 			<actions phase="post">
 				<action>
@@ -314,12 +314,15 @@
 					{
 						def task = findTask({ it.transitionId.eq("35") &amp; it.caseId.eq(sluzba.stringId)});
 						
-						def kontrola = findTask({ it.transitionId.eq("22") &amp; it.caseId.eq(sluzba.stringId)});
+						def user = userService.findById(sluzba.dataSet["text_8"].value, false);						
 						
-						def user = userService.findById(kontrola.userId, false);
+						async.run 
+						{
+							assignTask(task, user);
+							finishTask(task,user);
+						}
 						
-						assignTask(task, user);				
-						
+							
 					}
 				}				
 				

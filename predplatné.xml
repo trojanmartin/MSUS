@@ -82,6 +82,32 @@
 		<title>Automatické predĺženie</title>
 		<init>false</init>
 	</data>
+	<data type="number">
+		<id>number_3</id>
+		<title>Predĺžiť o </title>
+		<placeholder>placeholder</placeholder>
+		<desc>mesiacov</desc>
+		<init>0</init>
+	</data>
+	<data type="text">
+		<id>text_7</id>
+		<title>ends</title>
+		<placeholder>placeholder</placeholder>
+		<desc>description</desc>
+		<init>value</init>
+	</data>
+	<data type="text">
+		<id>text_8</id>
+		<title>userId</title>
+		<placeholder>placeholder</placeholder>
+		<desc>description</desc>
+		<init>value</init>
+	</data>
+	<data type="text">
+		<id>text_6</id>
+		<title>Stav</title>
+		<init>Vaše predplatné bolo zrušené</init>
+	</data>
 	<!-- I18NS -->
 	<!-- TRANSITIONS -->
 	<transition>
@@ -93,6 +119,42 @@
 		</layout>
 		<label>Vytvoriť</label>
 		<assignPolicy>auto</assignPolicy>
+		<dataGroup>
+			<id>DataGroup_3</id>
+			<dataRef>
+				<id>text_8</id>
+				<logic>
+					<behavior>hidden</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>4</y>
+					<rows>1</rows>
+					<cols>1</cols>
+					<offset>0</offset>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+		</dataGroup>
+		<dataGroup>
+			<id>DataGroup_2</id>
+			<dataRef>
+				<id>text_7</id>
+				<logic>
+					<behavior>hidden</behavior>
+				</logic>
+				<layout>
+					<x>1</x>
+					<y>4</y>
+					<rows>1</rows>
+					<cols>1</cols>
+					<offset>0</offset>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+		</dataGroup>
 		<dataGroup>
 			<id>DataGroup_1</id>
 			<dataRef>
@@ -206,8 +268,9 @@
 					<behavior>required</behavior>
 					<action trigger="set">
 						suma: f.number_1,
+						ends: f.text_7,
 						mesiac: f.this,
-						text: f.text_0,
+						start: f.text_0,						
 						predplatne: f.enumeration_0;
 						
 						
@@ -221,11 +284,28 @@
 							{
 								currentPrice = entry.value as String
 							}
-						}					
+						}									
 						
 						change suma value {
 							mesiac.value * (currentPrice as Double)
-						}						
+						};						
+						
+					Date date = new Date(); 
+	
+					change start value {
+						date.toString();
+					}
+						
+					def poc = (Integer) mesiac.value;
+					def a = null;
+					use (groovy.time.TimeCategory) {     
+							a = date+poc.months
+						 }
+						
+					change  ends value {
+						a.toString();
+					}
+						
 					</action>
 				</logic>
 				<layout>
@@ -239,8 +319,17 @@
 				</layout>
 			</dataRef>
 		</dataGroup>
-		<event type="finish">
+		<event type="assign">
 			<id>2_finish</id>
+			<actions phase="post">
+				<action>
+				userIdaa: f.text_8;
+				
+				change userIdaa value{
+					userService.getLoggedOrSystem().id
+				}
+			</action>
+			</actions>
 		</event>
 	</transition>
 	<transition>
@@ -256,8 +345,8 @@
 			<id>3_assign</id>
 			<actions phase="post">
 				<action>
-				suma: f.number_1,
-				datum: f.text_0;
+				suma: f.number_1;
+				
 				
 				
 	def userCase = findCase({it.processIdentifier.eq("5f86b237f9ac3b272d6be569_User")})
@@ -276,11 +365,7 @@ if(suma.value &lt;= userCase.dataSet["number_3"].value)
 			 ],
 			])
 	
-	 Date date = new Date(); 
-	
-	change datum value {
-		date.toString();
-	}
+	 
 	
     assignTask("61");	
 }
@@ -300,15 +385,93 @@ else{
 			<offset>0</offset>
 		</layout>
 		<label>Predĺžiť predplatné</label>
+		<dataGroup>
+			<id>DataGroup_0</id>
+			<dataRef>
+				<id>number_3</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>4</cols>
+					<offset>0</offset>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+		</dataGroup>
+		<event type="finish">
+			<id>13_finish</id>
+			<actions phase="post">
+				<action>				
+					suma: f.number_1,
+					ends: f.text_7,
+					mesiac: f.number_3,
+					
+					predplatne: f.enumeration_0;
+						
+						
+						def sluzba = findCase({it.processIdentifier.eq("5f86b237f9ac3b272d6be569_Služba")})																	
+						
+						def prices = sluzba.dataSet["subscriptionPrice"].options						
+						def currentPrice;
+						
+						for (entry in prices) {
+							if(entry.key.equals(predplatne.value.toString()))
+							{
+								currentPrice = entry.value as String
+							}
+						}									
+						
+						change suma value {
+							mesiac.value * (currentPrice as Double)
+						};	
+
+					def date = new Date(ends.value as String);
+					def poc = (Integer) mesiac.value;
+					def a = null;
+					use (groovy.time.TimeCategory) {     
+							a = date+poc.months
+						 }
+						
+					change  ends value {
+						a.toString();
+					}
+				
+				</action>
+			</actions>
+		</event>
 	</transition>
 	<transition>
 		<id>22</id>
-		<x>658</x>
-		<y>361</y>
+		<x>95</x>
+		<y>330</y>
 		<layout>
 			<offset>0</offset>
 		</layout>
 		<label>Kontrola stavu predplatného</label>
+		<dataGroup>
+			<id>DataGroup_2</id>
+			<layout>grid</layout>
+			<dataRef>
+				<id>text_6</id>
+				<logic>
+					<behavior>hidden</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>3</y>
+					<rows>2</rows>
+					<cols>4</cols>
+					<offset>0</offset>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+		</dataGroup>
 		<dataGroup>
 			<id>DataGroup_0</id>
 			<dataRef>
@@ -333,7 +496,6 @@ change predplatne value{
 					<cols>4</cols>
 					<offset>0</offset>
 					<template>material</template>
-					<appearance></appearance>
 				</layout>
 			</dataRef>
 		</dataGroup>
@@ -403,19 +565,12 @@ change predplatne value{
 				<logic>
 					<behavior>visible</behavior>
 					<action trigger="get">
-					platneOd: f.text_0,
 					platneDo: f.this,
-					pocetMesiacov: f.number_2;														
-				
-					def poc = (Integer) pocetMesiacov.value;
-					def date = new Date(platneOd.value as String);
-					def a = null;
-					use (groovy.time.TimeCategory) {     
-							a = date+poc.months
-						 }
+					platneDoaa: f.text_7;													
+			
 						
 					change  platneDo value {
-						a.toString();
+						platneDoaa.value;
 					}
 					
 				
@@ -457,7 +612,7 @@ change predplatne value{
 				<delegate>true</delegate>
 			</logic>
 		</roleRef>
-		<event type="assign">
+		<event type="finish">
 			<id>35_assign</id>
 			<actions phase="post">
 				<action>
@@ -465,11 +620,19 @@ change predplatne value{
 				
 				if(autoDaco.value)
 				{
-					assignTask("48");
+					async.run 
+						{
+							assignTask("48");							
+						}
+				
+					
 				}
 				else
 				{
-					assignTask("49");					
+					async.run 
+						{
+							assignTask("49");						
+						}
 				}
 				</action>
 			</actions>
@@ -483,7 +646,6 @@ change predplatne value{
 			<offset>0</offset>
 		</layout>
 		<label>Automatické predĺženie</label>
-		<finishPolicy>auto_no_data</finishPolicy>
 		<roleRef>
 			<id>User</id>
 			<logic>
@@ -504,7 +666,44 @@ change predplatne value{
 			<id>48_assign</id>
 			<actions phase="post">
 				<action>
-					assignTask("3");					
+					suma: f.number_1,
+					ends: f.text_7,									
+					predplatne: f.enumeration_0;
+						
+						
+						def sluzba = findCase({it.processIdentifier.eq("5f86b237f9ac3b272d6be569_Služba")})																	
+						
+						def prices = sluzba.dataSet["subscriptionPrice"].options						
+						def currentPrice;
+						
+						for (entry in prices) {
+							if(entry.key.equals(predplatne.value.toString()))
+							{
+								currentPrice = entry.value as String
+							}
+						}									
+						
+						change suma value {
+							1 * (currentPrice as Double)
+						};	
+
+					def date = new Date(ends.value as String);					
+					def a = null;
+					use (groovy.time.TimeCategory) {     
+							a = date+1.months
+						 }
+						
+					change  ends value {
+						a.toString();
+					}
+					
+					
+					
+					async.run
+					{
+						finishTask("48");
+					}				
+										
 				</action>
 			</actions>
 		</event>
@@ -517,7 +716,6 @@ change predplatne value{
 			<offset>0</offset>
 		</layout>
 		<label>Zrušenie predplatného</label>
-		<finishPolicy>auto_no_data</finishPolicy>
 		<roleRef>
 			<id>User</id>
 			<logic>
@@ -538,10 +736,25 @@ change predplatne value{
 			<id>49_assign</id>
 			<actions phase="post">
 				<action>
-				
-				assignTask("49");
+					stav: f.text_6,
+					autoa: f.boolean_1,
+					trans: t.22;
+					
+					make stav,visible on trans when {
+						1 == 1;
+					}
+					
+					make autoa,hidden on trans when {
+						1 == 1;
+					}
+					
+					async.run
+					{
+						finishTask("49");
+					}				
+										
 				</action>
-			</actions>
+			</actions>			
 		</event>
 	</transition>
 	<transition>
@@ -553,13 +766,15 @@ change predplatne value{
 		</layout>
 		<label>Platba úspešná</label>
 		<finishPolicy>auto_no_data</finishPolicy>
-		<event type="finish">
-			<id>61_finish</id>
+		<event type="assign">
+			<id>61_assign</id>
 			<actions phase="post">
 				<action>
-				
-				assignTask("22");
-				
+					
+					async.run
+					{
+						finishTask("61");
+					}
 				</action>
 			</actions>
 		</event>
@@ -594,10 +809,14 @@ change predplatne value{
 				<logic>
 					<behavior>editable</behavior>
 					<action trigger="set">
+					
+	
 					finishTask("63");
 						
-					assignTask("74");
-					finishTask("74");
+					assignTask("74");						
+					
+					
+					
 					</action>
 				</logic>
 				<layout>
@@ -614,11 +833,9 @@ change predplatne value{
 				<id>button_1</id>
 				<logic>
 					<behavior>editable</behavior>
-					<action trigger="set">
-					finishTask("63");
-						
+					<action trigger="set">				
+					finishTask("63");						
 					assignTask("75");
-					finishTask("75");
 					</action>
 				</logic>
 				<layout>
@@ -652,6 +869,24 @@ change predplatne value{
 		</layout>
 		<label>Zrušenie predplatného</label>
 		<finishPolicy>auto_no_data</finishPolicy>
+		<event type="assign">
+			<id>75_assign</id>
+			<actions phase="post">
+				<action>
+					stav: f.text_6,
+					autoa: f.boolean_1,
+					trans: t.22;
+					
+					make stav,visible on trans when {
+						1 == 1;
+					}			
+
+					make autoa,hidden on trans when {
+						1 == 1;
+					}
+				</action>
+			</actions>
+		</event>
 	</transition>
 	<!-- PLACES -->
 	<place>
@@ -800,13 +1035,6 @@ change predplatne value{
 		<type>regular</type>
 		<sourceId>61</sourceId>
 		<destinationId>6</destinationId>
-		<multiplicity>1</multiplicity>
-	</arc>
-	<arc>
-		<id>68</id>
-		<type>read</type>
-		<sourceId>6</sourceId>
-		<destinationId>22</destinationId>
 		<multiplicity>1</multiplicity>
 	</arc>
 	<arc>

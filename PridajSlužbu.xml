@@ -7,6 +7,10 @@
 	<transitionRole>false</transitionRole>
 	<!-- TRANSACTIONS -->
 	<!-- ROLES -->
+	<role>
+		<id>Admin</id>
+		<title>Admin</title>
+	</role>
 	<!-- DATA -->
 	<data type="enumeration_map">
 		<id>subscriptionType</id>
@@ -34,7 +38,6 @@
 	</data>
 	<!-- I18NS -->
 	<!-- TRANSITIONS -->
-
 	<transition>
 		<id>1</id>
 		<x>260</x>
@@ -43,6 +46,13 @@
 			<offset>0</offset>
 		</layout>
 		<label>Pridaj službu</label>
+		<roleRef>
+			<id>Admin</id>
+			<logic>
+				<perform>true</perform>
+				<delegate>true</delegate>
+			</logic>
+		</roleRef>
 		<dataGroup>
 			<id>DataGroup_1</id>
 			<dataRef>
@@ -117,7 +127,7 @@
 			</actions>
 		</event>
 	</transition>
-		<transition>
+	<transition>
 		<id>2</id>
 		<x>256</x>
 		<y>188</y>
@@ -125,6 +135,14 @@
 			<offset>0</offset>
 		</layout>
 		<label>Dostupné služby</label>
+		<roleRef>
+			<id>Admin</id>
+			<logic>
+				<perform>true</perform>
+				<delegate>true</delegate>
+				<view>true</view>
+			</logic>
+		</roleRef>
 		<dataGroup>
 			<id>DataGroup_0</id>
 			<dataRef>

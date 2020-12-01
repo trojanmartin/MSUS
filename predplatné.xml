@@ -39,6 +39,7 @@
 	<data type="number">
 		<id>number_2</id>
 		<title>Počet mesiacov</title>
+		<valid>inrange 1,24</valid>
 		<init>0</init>
 	</data>
 	<data type="text">
@@ -118,6 +119,7 @@
 			<offset>0</offset>
 		</layout>
 		<label>Vytvoriť</label>
+		<icon>create</icon>
 		<assignPolicy>auto</assignPolicy>
 		<dataGroup>
 			<id>DataGroup_3</id>
@@ -228,11 +230,14 @@
 					<behavior>visible</behavior>
 					<action trigger="get">
 						konto: f.number_0;
-						def user = findCase({it.processIdentifier.eq("5f86b23ef9ac3b272d6c7779_User")})
+						
+						
+						def user = findCase({it.processIdentifier.eq("5f86b23ef9ac3b272d6c7779_User")});
 						
 						change konto value {
 							user.dataSet["number_3"].value
 						}
+						
 						
 					</action>
 				</logic>
@@ -319,18 +324,6 @@
 				</layout>
 			</dataRef>
 		</dataGroup>
-		<event type="assign">
-			<id>2_finish</id>
-			<actions phase="post">
-				<action>
-				userIdaa: f.text_8;
-				
-				change userIdaa value{
-					userService.getLoggedOrSystem().id
-				}
-			</action>
-			</actions>
-		</event>
 	</transition>
 	<transition>
 		<id>3</id>
@@ -340,11 +333,13 @@
 			<offset>0</offset>
 		</layout>
 		<label>Zaplatiť</label>
+		<icon>attach_money</icon>
 		<assignPolicy>auto</assignPolicy>
 		<event type="assign">
 			<id>3_assign</id>
 			<actions phase="post">
 				<action>
+				userId: f.text_8,
 				suma: f.number_1;
 				
 				
@@ -385,6 +380,7 @@ else{
 			<offset>0</offset>
 		</layout>
 		<label>Predĺžiť predplatné</label>
+		<icon>west</icon>
 		<dataGroup>
 			<id>DataGroup_0</id>
 			<dataRef>
@@ -453,9 +449,9 @@ else{
 			<offset>0</offset>
 		</layout>
 		<label>Kontrola stavu predplatného</label>
+		<icon>menu_book</icon>
 		<dataGroup>
 			<id>DataGroup_2</id>
-			<layout>grid</layout>
 			<dataRef>
 				<id>text_6</id>
 				<logic>
@@ -496,6 +492,7 @@ change predplatne value{
 					<cols>4</cols>
 					<offset>0</offset>
 					<template>material</template>
+					<appearance></appearance>
 				</layout>
 			</dataRef>
 		</dataGroup>
@@ -596,6 +593,7 @@ change predplatne value{
 			<offset>0</offset>
 		</layout>
 		<label>Vypršalo</label>
+		<icon>timer_off</icon>
 		<finishPolicy>auto_no_data</finishPolicy>
 		<roleRef>
 			<id>Admin</id>
@@ -646,6 +644,7 @@ change predplatne value{
 			<offset>0</offset>
 		</layout>
 		<label>Automatické predĺženie</label>
+		<icon>autorenew</icon>
 		<roleRef>
 			<id>User</id>
 			<logic>
@@ -716,6 +715,7 @@ change predplatne value{
 			<offset>0</offset>
 		</layout>
 		<label>Zrušenie predplatného</label>
+		<icon>close</icon>
 		<roleRef>
 			<id>User</id>
 			<logic>
@@ -754,7 +754,7 @@ change predplatne value{
 					}				
 										
 				</action>
-			</actions>			
+			</actions>
 		</event>
 	</transition>
 	<transition>
@@ -765,6 +765,7 @@ change predplatne value{
 			<offset>0</offset>
 		</layout>
 		<label>Platba úspešná</label>
+		<icon>playlist_add_check</icon>
 		<finishPolicy>auto_no_data</finishPolicy>
 		<event type="assign">
 			<id>61_assign</id>
@@ -787,6 +788,7 @@ change predplatne value{
 			<offset>0</offset>
 		</layout>
 		<label>Platba neúspešná</label>
+		<icon>money_off</icon>
 		<dataGroup>
 			<id>DataGroup_0</id>
 			<dataRef>
@@ -858,6 +860,7 @@ change predplatne value{
 			<offset>0</offset>
 		</layout>
 		<label>Pokúsiť sa zaplatiť</label>
+		<icon>refresh</icon>
 		<finishPolicy>auto_no_data</finishPolicy>
 	</transition>
 	<transition>
@@ -868,6 +871,7 @@ change predplatne value{
 			<offset>0</offset>
 		</layout>
 		<label>Zrušenie predplatného</label>
+		<icon>close</icon>
 		<finishPolicy>auto_no_data</finishPolicy>
 		<event type="assign">
 			<id>75_assign</id>

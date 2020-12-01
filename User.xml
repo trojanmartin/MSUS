@@ -45,19 +45,19 @@
 		<title>Dostupné služby</title>
 		<init>option1</init>
 	</data>
-	<data type="text">
-		<id>text_0</id>
-		<title>set label</title>
-		<placeholder>placeholder</placeholder>
-		<desc>description</desc>
-		<init>value</init>
-	</data>
 	<data type="taskRef">
 		<id>taskRef_0</id>
 		<title>set label</title>
 		<placeholder>placeholder</placeholder>
 		<desc>description</desc>
 		<init>value</init>
+	</data>
+	<data type="text">
+		<id>text_0</id>
+		<title>userId</title>
+		<placeholder>placeholder</placeholder>
+		<desc>description</desc>
+		<init>0</init>
 	</data>
 	<!-- I18NS -->
 	<!-- TRANSITIONS -->
@@ -145,6 +145,25 @@
 			</logic>
 		</roleRef>
 		<dataGroup>
+			<id>DataGroup_2</id>
+			<layout>grid</layout>
+			<dataRef>
+				<id>text_0</id>
+				<logic>
+					<behavior>hidden</behavior>
+				</logic>
+				<layout>
+					<x>1</x>
+					<y>6</y>
+					<rows>1</rows>
+					<cols>1</cols>
+					<offset>0</offset>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+		</dataGroup>
+		<dataGroup>
 			<id>DataGroup_1</id>
 			<dataRef>
 				<id>text_4</id>
@@ -198,16 +217,26 @@
 		<event type="assign">
 			<id>5_assign</id>
 			<actions phase="post">
-				<action>		meno: f.text_4,
-        priezvisko: f.text_5;
+				<action>		
+				meno: f.text_4,
+				priezvisko: f.text_5,
+				userId: f.text_0;
 
-        change meno value {
-            userService.getLoggedOrSystem().name
-        }
+				
+				if(userId.value == "0")
+				{
+					change userId value {
+						userService.getLoggedOrSystem().id;
+					}
+				}
+				
+				change meno value {
+					userService.findById(userId.value, false).name;
+				}
 
-        change priezvisko value {
-            userService.getLoggedOrSystem().surname
-        }
+				change priezvisko value {
+					userService.findById(userId.value, false).surname;
+				}
 
 </action>
 			</actions>
@@ -239,11 +268,38 @@
 				<view>true</view>
 			</logic>
 		</roleRef>
+		<event type="assign">
+			<id>8_assign</id>
+			<actions phase="post">
+				<action>				
+				userId: f.text_0;
+
+				
+				if(userId.value == "0")
+				{
+					change userId value {
+						userService.getLoggedOrSystem().id;
+					}
+				}
+				</action>
+			</actions>
+		</event>
 		<event type="finish">
 			<id>8_finish</id>
 			<actions phase="post">
 				<action>				
-				def predplatne = createCase("5f86b23ef9ac3b272d6c7779_predplatne", "Predplatené")						
+				userId: f.text_0;
+				
+				def predplatne = createCase("5f86b23ef9ac3b272d6c7779_predplatne", "Predplatné")
+				
+				def vytvorit = findTask( { it.caseId.eq(predplatne.stringId) &amp; it.transitionId.eq("2")});
+				
+				setData(vytvorit, [
+						 "text_8": [
+						 "value": userId.value,
+						 "type" : "text"
+						 ],
+						])
 				</action>
 			</actions>
 		</event>
@@ -301,8 +357,7 @@
 		<event type="finish">
 			<id>10_finish</id>
 			<actions phase="post">
-				<action>					
-						
+				<action>				
 					def sluzby = findCase({it.processIdentifier.eq("5f86b23ef9ac3b272d6c7779_Služba")});						
 					def pridajSlubu = findTask({ it.transitionId.eq("1") &amp; it.caseId.eq(sluzby.stringId)});
 					finishTask(pridajSlubu);
@@ -332,32 +387,10 @@
 			<logic>
 			</logic>
 		</roleRef>
-		<dataGroup>
-			<id>DataGroup_0</id>
-			<dataRef>
-				<id>text_0</id>
-				<logic>
-					<behavior>editable</behavior>
-				</logic>
-				<layout>
-					<x>0</x>
-					<y>0</y>
-					<rows>1</rows>
-					<cols>3</cols>
-					<offset>0</offset>
-					<template>material</template>
-					<appearance>outline</appearance>
-				</layout>
-			</dataRef>
-		</dataGroup>
 		<event type="finish">
 			<id>13_finish</id>
 			<actions phase="post">
-				<action>
-				texta: f.text_0;
-				
-				
-				
+				<action>							
 				def sluzby = findCases({it.processIdentifier.eq("5f86b23ef9ac3b272d6c7779_predplatne")});			
 				
 				
@@ -376,8 +409,7 @@
 						}
 						
 					}
-				}				
-				
+				}							
 				</action>
 			</actions>
 		</event>

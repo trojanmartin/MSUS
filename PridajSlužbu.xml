@@ -150,7 +150,7 @@
 			<dataRef>
 				<id>subscriptionType</id>
 				<logic>
-					<behavior>visible</behavior>
+					<behavior>editable</behavior>
 				</logic>
 				<layout>
 					<x>0</x>
